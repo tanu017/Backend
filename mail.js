@@ -1,20 +1,27 @@
-const express = require("express");
-const EmailSchemas = require("../model/Email_model");
-const sendEmail = require("../../mail.js");
-const EmailData = async (req, res) => {
+const nodemailer = require("nodemailer");
+const transporter = nodemailer.createTransport({
+    host: process.env.HOST, 
+    port: 587,
+    secure: false, 
+    auth: {
+        user: process.env.MAIL_ID, 
+        pass: process.env.MAIL_PASS, 
+    },
+});
+const sendEmail = async (to, subject, text, html) => {
+    const mailOptions = {
+        from: process.env.MAILD_ID, 
+        to: to, 
+        subject: subject, 
+        text: text, 
+        html: html,
+    };
     try {
-        const { to, subject, text, html } = req.body;
-        const info = await sendEmail(to, subject, text, html);
-         const emailRecord = new EmailSchemas({to, subject, text, html});
-         await emailRecord.save();
-         res.status(200).json({
-            email: emailRecord, 
-            info: info,
-            message: "Email sent successfully and saved to database!", 
-         });
-    }
-    catch(error) {
-        console.log("Error in sending email", err);
+        await transporter.sendEmail(mailOptions);
+        console.log("Email sent successfully");
+    } 
+    catch(err) {
+        console.log("Error in sending Email", err);
     }
 };
-module.exports = { EmailData };
+module.exports = sendEmail;
