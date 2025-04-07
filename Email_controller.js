@@ -1,6 +1,6 @@
 const express = require("express");
 const EmailSchemas = require("../model/Email_model");
-const sendEmail = require("../../mail.js");
+const {sendEmail} = require("../../mail.js");
 const EmailData = async (req, res) => {
     try {
         const { to, subject, text, html } = req.body;
