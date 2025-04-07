@@ -1,20 +1,8 @@
-const express = require("express");
-const EmailSchemas = require("../model/Email_model");
-const sendEmail = require("../../mail.js");
-const EmailData = async (req, res) => {
-    try {
-        const { to, subject, text, html } = req.body;
-        const info = await sendEmail(to, subject, text, html);
-         const emailRecord = new EmailSchemas({to, subject, text, html});
-         await emailRecord.save();
-         res.status(200).json({
-            email: emailRecord, 
-            info: info,
-            message: "Email sent successfully and saved to database!", 
-         });
-    }
-    catch(error) {
-        console.log("Error in sending email", err);
-    }
-};
-module.exports = { EmailData };
+const mongoose = require("mongoose");
+const EmailSchemas = new mongoose.Schema({
+    to: { type: String, required: true}, 
+    subject: { type: String, required: true},
+    text: { type: String, required: true},
+    html: { type: String, required: true},
+});
+module.exports = mongoose.model("EmailSchemas", EmailSchemas);
